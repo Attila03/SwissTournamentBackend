@@ -31,6 +31,9 @@ class Round(models.Model):
     tournament = models.ForeignKey('Tournament')
     round_num = models.IntegerField()
 
+    class Meta:
+        unique_together = ("tournament", "round_num")
+
     def __str__(self):
         return "{} - Round {} ".format(self.tournament, self.round_num)
 
