@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 class Player(models.Model):
 
     name = models.CharField(max_length=100, unique=True)
-    tournament = models.ForeignKey('Tournament')
+    tournament = models.ForeignKey('Tournament', related_name='players')
     opponents = models.ManyToManyField('Player', blank=True)
     score = models.FloatField(default=0)
 
@@ -51,25 +51,25 @@ class Round(models.Model):
 
 class Match(models.Model):
 
-    WHITE = 'White',
-    BLACK = 'Black',
-    DRAW = 'Draw',
+    WHITE = 'White'
+    BLACK = 'Black'
+    DRAW = 'Draw'
     UNDETERMINED = 'Undetermined'
 
     MATCH_RESULT_CHOICES = (
-        (WHITE, 'White Won'),
-        (BLACK, 'Black Won'),
+        (WHITE, 'White won'),
+        (BLACK, 'Black won'),
         (DRAW, 'Match Drawn'),
         (UNDETERMINED, 'Undetermined')
     )
 
-    round = models.ForeignKey('Round')
+    round = models.ForeignKey('Round', related_name='matches', blank=True)
     white_player = models.ForeignKey('Player', related_name='match_as_white')
     black_player = models.ForeignKey('Player', related_name='match_as_black')
-    result = models.CharField(max_length=20, choices=MATCH_RESULT_CHOICES, default=UNDETERMINED)
+    result = models.CharField(max_length=20, choices=MATCH_RESULT_CHOICES, blank=True, default=UNDETERMINED)
 
     def __str__(self):
-        return "{} vs {} - {}".format(self.white_player, self.black_player, self.result)
+        return "{}(W) vs {}(B) - {}".format(self.white_player, self.black_player, self.result)
 
 
 @receiver(post_save, sender=Match)
