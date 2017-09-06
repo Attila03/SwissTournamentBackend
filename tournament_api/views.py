@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.views import View
 
 from rest_framework import generics
-from rest_framework import filters
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import (Player, Tournament, Round, Match, )
 from .serializers import (PlayerSerializer, PlayerDetailSerializer, TournamentListSerializer,
@@ -15,6 +16,20 @@ class Home(View):
     def get(self, request, *args, **kwargs):
 
         return render(request, 'tournament_api/home.html')
+
+
+class PlayerRegisterListView(generics.ListCreateAPIView):
+
+    queryset = Player.objects.all()
+    serializer_class = PlayerSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PlayerListView(generics.ListCreateAPIView):

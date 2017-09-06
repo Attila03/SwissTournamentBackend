@@ -1,12 +1,13 @@
 from django.conf.urls import url
 from .views import (PlayerListView, PlayerDetailView, TournamentListView,
                     TournamentDetailView, MatchListView, MatchDetailView,
-                    RoundListView, RoundDetailView)
+                    RoundListView, RoundDetailView, PlayerRegisterListView)
 
 
 urlpatterns = [
     url(r'^players/$', PlayerListView.as_view(), name='player_list'),
     url(r'^players/(?P<pk>[\w-]+)', PlayerDetailView.as_view(), name='player_detail'),
+    url(r'^register-players/$', PlayerRegisterListView.as_view(), name='register_player_list'),
     url(r'tournaments/$', TournamentListView.as_view(), name='tournament_list'),
     url(r'tournaments/(?P<pk>[\w-]+)', TournamentDetailView.as_view(), name='tournament_detail'),
     url(r'matches/$', MatchListView.as_view(), name='match_list'),

@@ -5,13 +5,16 @@ from django.db.models.signals import post_save
 
 class Player(models.Model):
 
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
     tournament = models.ForeignKey('Tournament', related_name='players')
     opponents = models.ManyToManyField('Player', blank=True)
     score = models.FloatField(default=0)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = ("name", "tournament")
 
 
 class Tournament(models.Model):
