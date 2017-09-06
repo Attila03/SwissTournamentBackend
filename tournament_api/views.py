@@ -1,14 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
+from django.http import HttpResponse, JsonResponse
 
-from rest_framework import generics
+from rest_framework import generics, permissions, exceptions
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
 from rest_framework import status
+from rest_framework.views import APIView
 
 from .models import (Player, Tournament, Round, Match, )
 from .serializers import (PlayerSerializer, PlayerDetailSerializer, TournamentListSerializer,
                           TournamentDetailSerializer, MatchListSerializer, MatchDetailSerializer,
-                          RoundListSerializer, RoundDetailSerializer)
+                          RoundListSerializer, RoundDetailSerializer, PlayerDetailFKSerializer)
 
 
 class Home(View):
@@ -27,7 +30,10 @@ class PlayerRegisterListView(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
+            print("data", serializer.data)
+            print("serializer", serializer)
             headers = self.get_success_headers(serializer.data)
+            print("headers", headers)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -93,3 +99,23 @@ class RoundDetailView(generics.RetrieveDestroyAPIView):
 
     queryset = Round.objects.all()
     serializer_class = RoundDetailSerializer
+
+
+class TournamentStandingsView(APIView):
+
+    # Using Django View
+    # def get(self, request, *args, **kwargs):
+    #     tournament_id = kwargs.get("pk", None)
+    #     if tournament_id:
+    #         standings = Tournament.objects.get(id=tournament_id).get_standings()
+    #         serializer = PlayerDetailFKSerializer(standings, many=True)
+    #         return JsonResponse(serializer.data, safe=False)
+
+    permission_classes = (permissions.IsAdminUser,)
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def get(self, request, *args, **kwargs):
+        tournament_id = kwargs.get("pk", None)
+        standings = get_object_or_404(Tournament, id=tournament_id).get_standings()
+        serializer = PlayerDetailFKSerializer(standings, many=True)
+        return Response(serializer.data)

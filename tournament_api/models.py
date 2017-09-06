@@ -26,7 +26,7 @@ class Tournament(models.Model):
         return self.name
 
     def get_standings(self):
-        return self.player_set.all().order_by('score')
+        return self.players.all().order_by('-score')
 
 
 class Round(models.Model):
