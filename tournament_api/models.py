@@ -29,13 +29,14 @@ class Tournament(models.Model):
         return self.players.all().order_by('-score')
 
     def get_latest_round_num(self):
-        return max(round.round_num for round in self.round_set.all())
+        return self.round_set.all().order_by('-round_num').first().round_num
 
 
 class Round(models.Model):
 
     tournament = models.ForeignKey('Tournament')
     round_num = models.IntegerField()
+    concluded = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ("tournament", "round_num")
