@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.http import HttpResponse, JsonResponse
+from django.http import Http404
 
 from rest_framework import generics, permissions, exceptions
 from rest_framework.response import Response
@@ -11,7 +12,10 @@ from rest_framework.views import APIView
 from .models import (Player, Tournament, Round, Match, )
 from .serializers import (PlayerSerializer, PlayerDetailSerializer, TournamentListSerializer,
                           TournamentDetailSerializer, MatchListSerializer, MatchDetailSerializer,
-                          RoundListSerializer, RoundDetailSerializer, PlayerDetailFKSerializer)
+                          RoundListSerializer, RoundDetailSerializer, PlayerDetailFKSerializer,
+                          TournamentRoundSerializer)
+
+import traceback, logging
 
 
 class Home(View):
@@ -130,3 +134,22 @@ class RoundPairingsView(APIView):
         round_id = kwargs.get("pk", None)
         pairings = get_object_or_404(Round, id=round_id).get_pairings()
         return Response(pairings)
+
+
+class TournamentRoundView(APIView):
+
+    permission_classes = (permissions.IsAdminUser, )
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer, )
+
+    def get(self, request, *args, **kwargs):
+        tournament_id = kwargs.pop("pk")
+        round_num = kwargs.pop("round_num")
+        round = get_object_or_404(Round, tournament=tournament_id, round_num=round_num)
+        serializer = RoundDetailSerializer(round)
+        return Response(serializer.data)
+        # try:
+        #     round = get_object_or_404(Round, tournament=tournament_id, round_num=round_num)
+        #     serializer = RoundDetailSerializer(round)
+        #     return Response(serializer.data)
+        # except Http404:
+        #     return Response({"exists": False})

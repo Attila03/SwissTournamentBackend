@@ -62,7 +62,7 @@ class RoundListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Round
-        fields = ('id', 'round_num', 'tournament', 'matches')
+        fields = ('id', 'round_num', 'tournament', 'concluded', 'matches')
 
     def create(self, validated_data):
         matches_data = validated_data.pop('matches')
@@ -76,10 +76,16 @@ class RoundListSerializer(serializers.ModelSerializer):
 class RoundDetailSerializer(serializers.ModelSerializer):
 
     matches = MatchDetailSerializer(many=True, read_only=True)
+    # exists = serializers.BooleanField(default=True)
 
     class Meta:
         model = Round
-        fields = ('id', 'round_num', 'tournament', 'matches')
+        fields = ('id', 'round_num', 'tournament', 'concluded', 'matches')
+
+
+class TournamentRoundSerializer(serializers.ModelSerializer):
+
+    pass
 
 
 
