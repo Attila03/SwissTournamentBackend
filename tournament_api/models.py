@@ -28,6 +28,9 @@ class Tournament(models.Model):
     def get_standings(self):
         return self.players.all().order_by('-score')
 
+    def get_latest_round_num(self):
+        return max(round.round_num for round in self.round_set.all())
+
 
 class Round(models.Model):
 

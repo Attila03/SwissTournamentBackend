@@ -119,3 +119,14 @@ class TournamentStandingsView(APIView):
         standings = get_object_or_404(Tournament, id=tournament_id).get_standings()
         serializer = PlayerDetailFKSerializer(standings, many=True)
         return Response(serializer.data)
+
+
+class RoundPairingsView(APIView):
+
+    permission_classes = (permissions.IsAdminUser, )
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def get(self, request, *args, **kwargs):
+        round_id = kwargs.get("pk", None)
+        pairings = get_object_or_404(Round, id=round_id).get_pairings()
+        return Response(pairings)
