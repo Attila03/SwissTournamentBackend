@@ -1,6 +1,9 @@
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.contrib.auth.models import User
+
+from math import log2, ceil
 
 
 class Player(models.Model):
@@ -20,6 +23,7 @@ class Player(models.Model):
 class Tournament(models.Model):
 
     name = models.CharField(max_length=150,  unique=True)
+    organizer = models.ForeignKey(User, default='1')
     # winner = models.ForeignKey('Player', null=True, blank=True, related_name='tournament_won')
 
     def __str__(self):
@@ -28,8 +32,32 @@ class Tournament(models.Model):
     def get_standings(self):
         return self.players.all().order_by('-score')
 
-    def get_latest_round_num(self):
-        return self.round_set.all().order_by('-round_num').first().round_num
+    def get_last_concluded_round(self):
+        if self.round_set.filter(concluded=True):
+            return self.round_set.filter(concluded=True).order_by('-round_num').first().round_num
+        else:
+            return 0
+
+    def get_total_rounds(self):
+        player_count = self.players.count()
+        if player_count:
+            return ceil(log2(player_count))
+        else:
+            return 0
+
+    def get_pairings(self):
+        matched = set()
+        current_standings = self.get_standings()
+        pairings = []
+        for i, player1 in enumerate(current_standings):
+            if player1 not in matched:
+                for player2 in current_standings[i+1:]:
+                    if player2 not in player1.opponents.all() and player2 not in matched:
+                        pairings.append((player1.id, player2.id))
+                        matched.add(player1)
+                        matched.add(player2)
+                        break
+        return pairings
 
 
 class Round(models.Model):
@@ -44,27 +72,13 @@ class Round(models.Model):
     def __str__(self):
         return "{} - Round {} ".format(self.tournament, self.round_num)
 
-    def get_pairings(self):
-        matched = set()
-        current_standings = Tournament.objects.get(round=self).get_standings()
-        pairings = []
-        for i, player1 in enumerate(current_standings):
-            if player1 not in matched:
-                for player2 in current_standings[i+1:]:
-                    if player2 not in player1.opponents.all() and player2 not in matched:
-                        pairings.append((player1.id, player2.id))
-                        matched.add(player1)
-                        matched.add(player2)
-                        break
-        return pairings
-
 
 class Match(models.Model):
 
-    WHITE = 'White'
-    BLACK = 'Black'
-    DRAW = 'Draw'
-    UNDETERMINED = 'Undetermined'
+    WHITE = 'white'
+    BLACK = 'black'
+    DRAW = 'draw'
+    UNDETERMINED = 'undetermined'
 
     MATCH_RESULT_CHOICES = (
         (WHITE, 'White won'),
@@ -85,16 +99,16 @@ class Match(models.Model):
 @receiver(post_save, sender=Match)
 def update_player_opponents_and_score(sender, instance, **kwargs):
     points_map = {
-        'White': 1,
-        'Black': 0,
-        'Draw': 0.5
+        Match.WHITE: 1,
+        Match.BLACK: 0,
+        Match.DRAW: 0.5
     }
 
     white = instance.white_player
     black = instance.black_player
     white.opponents.add(black)
     black.opponents.add(white)
-    if instance.result is not 'Undetermined':
+    if instance.result is not Match.UNDETERMINED:
         white.score += points_map[instance.result]
         black.score += abs(1-points_map[instance.result])
     white.save()
