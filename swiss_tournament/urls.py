@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^$', Home.as_view(), name='home'),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api/', include('tournament_api.urls', namespace='api')),
+    url(r'^accounts/', include('accounts.urls', namespace='accounts'))
 ]
