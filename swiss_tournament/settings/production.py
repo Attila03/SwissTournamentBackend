@@ -8,4 +8,4 @@ DATABASES = {
     'default': dj_database_url.config(config('DATABASE_URL'))
 }
 
-ALLOWED_HOSTS += []
+ALLOWED_HOSTS += ['swisstournament.herokuapp.com']
