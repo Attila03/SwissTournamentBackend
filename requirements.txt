@@ -21,3 +21,4 @@ wcwidth==0.1.7
 Werkzeug==0.12.2
 win-unicode-console==0.5
 gunicorn-19.7.1
+whitenoise-3.3.0
