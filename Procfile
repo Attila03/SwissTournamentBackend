@@ -1,0 +1,1 @@
+web: gunicorn yincmall.wsgi --log-file -
