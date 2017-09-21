@@ -5,7 +5,7 @@ import dj_database_url
 DEBUG = False
 
 DATABASES = {
-    'default': dj_database_url.config(config('DATABASE_URL'))
+    'default': dj_database_url.config()
 }
 
 ALLOWED_HOSTS += ['swisstournament.herokuapp.com']
