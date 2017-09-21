@@ -1,1 +1,1 @@
-web: gunicorn yincmall.wsgi --log-file -
+web: gunicorn swiss_tournament.wsgi --log-file -
