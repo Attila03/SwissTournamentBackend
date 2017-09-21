@@ -22,3 +22,4 @@ Werkzeug==0.12.2
 win-unicode-console==0.5
 gunicorn==19.7.1
 whitenoise==3.3.0
+psycopg2==2.7.3.1
