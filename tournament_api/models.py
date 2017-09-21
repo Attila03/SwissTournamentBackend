@@ -49,6 +49,7 @@ class Tournament(models.Model):
         matched = set()
         current_standings = self.get_standings()
         pairings = []
+        unmatched = []
         for i, player1 in enumerate(current_standings):
             if player1 not in matched:
                 for player2 in current_standings[i+1:]:
@@ -57,6 +58,12 @@ class Tournament(models.Model):
                         matched.add(player1)
                         matched.add(player2)
                         break
+                else:
+                    unmatched.append(player1)
+        if unmatched:
+            for i in range(0,len(unmatched),2):
+                pairings.append((unmatched[i].id, unmatched[i+1].id))
+
         return pairings
 
 
