@@ -41,7 +41,12 @@ class RegistrationView(View):
             new_user = User(username=username, email=email)
             new_user.set_password(password)
             new_user.save()
-            return new_user
+            token = TokenSerializer(new_user.auth_token)
+            return JsonResponse({
+                "id": new_user.id,
+                "username": new_user.username,
+                "auth_token": token.data
+            })
 
 
 @method_decorator(csrf_exempt, name='dispatch')
