@@ -124,6 +124,10 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+STATICFILE_DIRS = [
+    os.path.join(BASE_DIR, 'assets')
+]
+
 #CORS
 
 CORS_ORIGIN_ALLOW_ALL = True
