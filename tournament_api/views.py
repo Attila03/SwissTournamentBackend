@@ -111,7 +111,7 @@ class TournamentStandingsView(APIView):
     #         serializer = PlayerDetailFKSerializer(standings, many=True)
     #         return JsonResponse(serializer.data, safe=False)
 
-    permission_classes = (permissions.IsAdminUser,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def get(self, request, *args, **kwargs):
@@ -123,7 +123,7 @@ class TournamentStandingsView(APIView):
 
 class TournamentPairingsView(APIView):
 
-    permission_classes = (permissions.IsAuthenticated, )
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
 
     def get(self, request, *args, **kwargs):
@@ -134,7 +134,7 @@ class TournamentPairingsView(APIView):
 
 class TournamentRoundView(APIView):
 
-    permission_classes = (permissions.IsAdminUser, )
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer, )
 
     def get(self, request, *args, **kwargs):
