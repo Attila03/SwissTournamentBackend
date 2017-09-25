@@ -91,6 +91,7 @@ class MatchDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class RoundListView(generics.ListCreateAPIView):
 
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     queryset = Round.objects.all()
     serializer_class = RoundListSerializer
 
