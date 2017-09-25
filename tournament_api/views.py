@@ -98,6 +98,7 @@ class RoundListView(generics.ListCreateAPIView):
 
 class RoundDetailView(generics.RetrieveUpdateDestroyAPIView):
 
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
     queryset = Round.objects.all()
     serializer_class = RoundDetailSerializer
 
